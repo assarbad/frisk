@@ -31,30 +31,35 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef __LOADLIBRARY_H_VER__
-#define __LOADLIBRARY_H_VER__ 2010062819
-// $Id$
+#define __LOADLIBRARY_H_VER__ 2016102019
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif // Check for "#pragma once" support
 #include <Windows.h>
 #include <tchar.h>
-#ifdef __BORLANDC__ // special treatment for BCB, as so often :-/
-#   include <stdio.h>
-#else
-#   include <cstdio>
-#endif // __BORLANDC__
-#include "SimpleBuffer.h"
-#include "tracer.h"
-#include "fpav_macros.h"
-
+#if (__SIMPLEBUFFER_H_VER__ < 2016102019)
+#   include "SimpleBuffer.h"
+#endif
 // Save the macro, in case it was declared elsewhere
 #pragma push_macro("CLL_VERBOSE_VTRACE")
+#if !defined(VTRACE)
+#   ifdef __BORLANDC__ // special treatment for BCB, as so often :-/
+#       include <stdio.h>
+#   else
+#       include <cstdio>
+#   endif // __BORLANDC__
+#   include "tracer.h"
+#   include "fpav_macros.h"
+#   ifdef VERBOSE_CLOADLIBRARY_DEBUGGING
+#       define CLL_VERBOSE_VTRACE VTRACE
+#   else // VERBOSE_CLOADLIBRARY_DEBUGGING
+#       define CLL_VERBOSE_VTRACE(...) while(false) {}
+#   endif // VERBOSE_CLOADLIBRARY_DEBUGGING
+#else
+#   define CLL_VERBOSE_VTRACE(...) while(false) {}
+#endif
 
-#ifdef VERBOSE_CLOADLIBRARY_DEBUGGING
-#   define CLL_VERBOSE_VTRACE VTRACE
-#else // VERBOSE_CLOADLIBRARY_DEBUGGING
-#   define CLL_VERBOSE_VTRACE ; /##/ VTRACE
-#endif // VERBOSE_CLOADLIBRARY_DEBUGGING
+
 
 class CLoadLibrary
 {
@@ -517,6 +522,7 @@ protected:
     bool m_NeedToFree;
 };
 
+#ifndef CLL_NO_ENSURE_VERSION_CLASS
 class CEnsureVersion: public CLoadLibrary
 {
     typedef struct _VS_VERSIONINFO
@@ -696,6 +702,7 @@ protected:
     bool m_Initialized;
     ULARGE_INTEGER m_VersionFile, m_VersionNeed;
 };
+#endif // CLL_NO_ENSURE_VERSION_CLASS
 // Restore macro from above
 #pragma pop_macro("CLL_VERBOSE_VTRACE")
 

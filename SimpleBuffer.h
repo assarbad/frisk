@@ -31,7 +31,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef __SIMPLEBUFFER_H_VER__
-#define __SIMPLEBUFFER_H_VER__ 2011061514
+#define __SIMPLEBUFFER_H_VER__ 2016102019
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
 #endif // Check for "#pragma once" support
@@ -45,7 +45,7 @@
 #endif // _MSC_VER
 
 #ifndef DBGPRINTF
-#define DBGPRINTF ; /##/
+#define DBGPRINTF(...) while(false) {}
 #endif
 // Very simple wrapper for zero terminated strings of a given "character" type
 template <typename T> class CSimpleBuf
@@ -154,7 +154,7 @@ public:
     // Append operator for same class
     CSimpleBuf& operator+=(const CSimpleBuf& RValue)
     {
-        DBGPRINTF("[%p::%s] %d\n", this, __FUNCTION__, (LengthSZ<size_t>() + RValue.LengthSZ<size_t>())));
+        DBGPRINTF("[%p::%s] %d\n", this, __FUNCTION__, (LengthSZ<size_t>() + RValue.LengthSZ<size_t>()));
         if(RValue.LengthSZ<size_t>() && ReAlloc(LengthSZ<size_t>() + RValue.LengthSZ<size_t>()))
         {
             // Append to the previous content
